@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and OCR</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 80%; margin: 0 auto; text-align: center; }
+        img { max-width: 100%; height: auto; }
+        .error { color: red; }
+        .ocr-text { margin: 10px 0; }
+        .cropped-image { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Image for Object Detection and Text Extraction</h1>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*">
+            <button type="submit">Upload Image</button>
+        </form>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if filename %}
+            <h2>Uploaded Image</h2>
+            <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Uploaded Image">
+            <h2>Detected Objects and Text</h2>
+            {% for cropped_image, text in ocr_texts %}
+                <div class="cropped-image">
+                    <img src="{{ url_for('uploaded_file', filename=cropped_image) }}" alt="Cropped Image">
+                    <p class="ocr-text">Detected Text: {{ text }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</body>
+</html>
