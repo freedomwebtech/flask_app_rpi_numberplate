@@ -1,3 +1,6 @@
 sudo apt install sqlite3
 lsof -i :5000
 kill <pid>
+timedatectl set-time "2022-01-30 10:30:00"
+sudo systemctl stop systemd-timesyncd.service
+
