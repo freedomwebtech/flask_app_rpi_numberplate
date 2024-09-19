@@ -1,2 +1,3 @@
+sudo apt install sqlite3
 lsof -i :5000
 kill <pid>
