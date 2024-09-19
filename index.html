@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload with Date and Text Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        h1, h2 {
+            margin: 10px 0;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="file"],
+        input[type="text"],
+        input[type="submit"],
+        input[type="time"],
+        input[type="datetime-local"] {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        img {
+            margin-top: 10px;
+            width: 100%;
+            max-width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        /* Center the uploaded image and detected text */
+        .image-text-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .detected-text ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .detected-text li {
+            flex: 0 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start; /* Align items to the left */
+            flex-wrap: nowrap; /* Prevents wrapping, forces horizontal scroll */
+            gap: 10px; /* Space between items */
+            margin: 0;
+            overflow-x: auto; /* Enables horizontal scrolling */
+        }
+        li {
+            flex: 0 0 auto; /* Prevents items from shrinking or growing */
+            width: 200px; /* Fixed width for items */
+            box-sizing: border-box;
+            text-align: center; /* Centers content in each item */
+        }
+        a {
+            text-decoration: none;
+            color: #3498db;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        p {
+            margin: 5px 0;
+        }
+        .back-button {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+        @media (max-width: 600px) {
+            .back-button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+            ul {
+                flex-direction: row;
+                overflow-x: auto; /* Ensure horizontal scrolling */
+                padding: 10px 0;
+            }
+            li {
+                width: 200px; /* Adjust width if needed */
+            }
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(function() {
+            $("#datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Image</h1>
+        
+        <!-- Image Upload Form -->
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*" required>
+            <input type="submit" value="Upload">
+        </form>
+
+        <!-- Display Uploaded Image and Detected Text (Centered) -->
+        {% if filename %}
+            <div class="image-text-container">
+                <h2>Uploaded Image:</h2>
+                <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Uploaded Image">
+                
+                <!-- Display Detected Text -->
+                {% if ocr_texts %}
+                    <div class="detected-text">
+                        <h2>Detected Text:</h2>
+                        <ul>
+                            {% for text in ocr_texts %}
+                                <li>{{ text }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+        
+        <!-- Search Bar -->
+        <h2>Search by Date and Time</h2>
+        <form method="GET">
+            <input type="text" id="datepicker" name="search" placeholder="Enter date (YYYY-MM-DD)" value="{{ search_query }}">
+            <input type="time" name="time" value="{{ search_time }}">
+            <input type="submit" value="Search">
+        </form>
+        
+        <!-- Display Back Button -->
+        <a href="/" class="back-button">Back to Upload</a>
+
+        <!-- Display Search Results Horizontally -->
+        {% if filtered_images %}
+            <h2>Search Results:</h2>
+            <ul>
+                {% for image in filtered_images %}
+                    <li>
+                        <img src="{{ url_for('uploaded_file', filename=image.filename) }}" alt="Image">
+                        <p><strong>Timestamp:</strong> {{ image.timestamp }}</p>
+                        <p><strong>OCR Text:</strong> {{ image.ocr_text }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>
