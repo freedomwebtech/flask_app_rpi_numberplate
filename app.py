@@ -12,9 +12,9 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png'}
 
-# Initialize PaddleOCR and YOLOv8
+
 ocr = PaddleOCR()
-model = YOLO('best.pt')  # Replace with your YOLOv8 model path
+model = YOLO('best.pt')  
 
 # Ensure the upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
